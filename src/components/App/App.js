@@ -41,6 +41,19 @@ class App extends React.Component {
       playListName: "Adam Young 101",
       playListTracks: DemoPlayListTracks
     };
+    this.addTrack = this.addTrack.bind(this);
+  }
+
+  addTrack(track) {
+    if (
+      this.state.playListTracks.find(storedTrack => storedTrack.id === track.id)
+    ) {
+      // Track already exists, no need to add
+      return;
+    }
+    const newTracks = this.state.playListTracks.concat(track);
+
+    this.setState({ playListTracks: newTracks });
   }
 
   render() {
@@ -52,7 +65,10 @@ class App extends React.Component {
         <div className="App">
           <SearchBar />
           <div className="App-playlist">
-            <SearchResults results={this.state.searchResults} />
+            <SearchResults
+              onAdd={this.addTrack}
+              results={this.state.searchResults}
+            />
             <PlayList
               name={this.state.playListName}
               tracks={this.state.playListTracks}

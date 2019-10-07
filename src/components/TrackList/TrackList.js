@@ -11,12 +11,7 @@ class TrackList extends React.Component {
       <div className="TrackList">
         {this.props.tracks.map(track => {
           return (
-            <Track
-              key={track.id}
-              name={track.name}
-              artist={track.artist}
-              album={track.album}
-            />
+            <Track key={track.id} track={track} onAdd={this.props.onAdd} />
           );
         })}
       </div>
@@ -25,7 +20,8 @@ class TrackList extends React.Component {
 }
 
 TrackList.propTypes = {
-  tracks: PropTypes.array.isRequired
+  tracks: PropTypes.array.isRequired,
+  onAdd: PropTypes.func
 };
 
 export default TrackList;
