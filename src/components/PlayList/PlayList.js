@@ -6,10 +6,22 @@ import "./PlayList.css";
 import TrackList from "../TrackList/TrackList";
 
 class PlayList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleNameChange = this.handleNameChange.bind(this);
+  }
+
+  handleNameChange(event) {
+    this.props.onNameChange(event.target.value);
+  }
+
   render() {
     return (
       <div className="Playlist">
-        <input defaultValue={this.props.name} />
+        <input
+          defaultValue={this.props.name}
+          onChange={this.handleNameChange}
+        />
         <TrackList
           onRemove={this.props.onRemove}
           tracks={this.props.tracks}
@@ -23,7 +35,8 @@ class PlayList extends React.Component {
 PlayList.propTypes = {
   name: PropTypes.string.isRequired,
   tracks: PropTypes.array.isRequired,
-  onRemove: PropTypes.func
+  onRemove: PropTypes.func,
+  onNameChange: PropTypes.func
 };
 
 export default PlayList;
