@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 import "./SearchResults.css";
 
@@ -9,10 +10,19 @@ class SearchResults extends React.Component {
     return (
       <div className="SearchResults">
         <h2>Results</h2>
-        <TrackList />
+        <TrackList
+          onAdd={this.props.onAdd}
+          isRemoval={false}
+          tracks={this.props.results}
+        />
       </div>
     );
   }
 }
+
+SearchResults.propTypes = {
+  results: PropTypes.array.isRequired,
+  onAdd: PropTypes.func
+};
 
 export default SearchResults;
