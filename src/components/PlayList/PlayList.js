@@ -9,10 +9,15 @@ class PlayList extends React.Component {
   constructor(props) {
     super(props);
     this.handleNameChange = this.handleNameChange.bind(this);
+    this.handleSavePlaylist = this.handleSavePlaylist.bind(this);
   }
 
   handleNameChange(event) {
     this.props.onNameChange(event.target.value);
+  }
+
+  handleSavePlaylist() {
+    this.props.onSave();
   }
 
   render() {
@@ -27,7 +32,9 @@ class PlayList extends React.Component {
           tracks={this.props.tracks}
           isRemoval={true}
         />
-        <button className="Playlist-save">SAVE TO SPOTIFY</button>
+        <button className="Playlist-save" onClick={this.handleSavePlaylist}>
+          SAVE TO SPOTIFY
+        </button>
       </div>
     );
   }
@@ -36,7 +43,8 @@ PlayList.propTypes = {
   name: PropTypes.string.isRequired,
   tracks: PropTypes.array.isRequired,
   onRemove: PropTypes.func,
-  onNameChange: PropTypes.func
+  onNameChange: PropTypes.func,
+  onSave: PropTypes.func
 };
 
 export default PlayList;

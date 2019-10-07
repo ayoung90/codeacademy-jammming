@@ -45,6 +45,7 @@ class App extends React.Component {
     this.removeTrack = this.removeTrack.bind(this);
     this.updatePlaylistName = this.updatePlaylistName.bind(this);
     this.search = this.search.bind(this);
+    this.savePlaylist = this.savePlaylist.bind(this);
   }
 
   addTrack(track) {
@@ -71,8 +72,22 @@ class App extends React.Component {
     this.setState({ playListName: name });
   }
 
+  savePlaylist() {
+    const trackURIs = this.state.playListTracks.map(track => track.id);
+    console.log(
+      `Tracks to save under '${this.state.playListName}' are.. ${trackURIs}`
+    );
+    /**
+     * @todo integrate with Spotify API
+     */
+  }
+
   search(term) {
     console.log("Searching for.. " + term);
+
+    /**
+     * @todo integrate with Spotify API
+     */
   }
 
   render() {
@@ -93,6 +108,7 @@ class App extends React.Component {
               tracks={this.state.playListTracks}
               onRemove={this.removeTrack}
               onNameChange={this.updatePlaylistName}
+              onSave={this.savePlaylist}
             />
           </div>
         </div>
