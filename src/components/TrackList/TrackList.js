@@ -11,7 +11,13 @@ class TrackList extends React.Component {
       <div className="TrackList">
         {this.props.tracks.map(track => {
           return (
-            <Track key={track.id} track={track} onAdd={this.props.onAdd} />
+            <Track
+              key={track.id}
+              track={track}
+              onAdd={this.props.onAdd}
+              isRemoval={this.props.isRemoval}
+              onRemove={this.props.onRemove}
+            />
           );
         })}
       </div>
@@ -21,7 +27,9 @@ class TrackList extends React.Component {
 
 TrackList.propTypes = {
   tracks: PropTypes.array.isRequired,
-  onAdd: PropTypes.func
+  onAdd: PropTypes.func,
+  isRemoval: PropTypes.bool,
+  onRemove: PropTypes.func
 };
 
 export default TrackList;
