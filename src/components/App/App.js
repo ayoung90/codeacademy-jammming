@@ -1,22 +1,24 @@
 import React from "react";
 import "./App.css";
 
+//Components
+import SearchBar from "../SearchBar/SearchBar";
+import SearchResults from "../SearchResults/SearchResults";
+import PlayList from "../PlayList/PlayList";
+
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>
+        Ja<span className="highlight">mmm</span>ing
+      </h1>
+      <div className="App">
+        <SearchBar />
+        <div className="App-playlist">
+          <SearchResults />
+          <PlayList />
+        </div>
+      </div>
     </div>
   );
 }
