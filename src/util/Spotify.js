@@ -64,6 +64,12 @@ const Spotify = {
     )
       .then(response => response.json()) //@todo add error handler..
       .then(jsonResponse => {
+        if (jsonResponse.tracks.total === 0) {
+          /**
+           * @todo implement proper 'No results found error message'
+           */
+          return {};
+        }
         return jsonResponse.tracks.items.map(track => {
           console.log(track);
           /**
@@ -73,7 +79,8 @@ const Spotify = {
             id: track.id,
             name: track.name,
             artist: track.artists[0].name,
-            album: track.album.name
+            album: track.album.name,
+            uri: track.uri
           };
         });
       });
