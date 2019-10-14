@@ -5,6 +5,7 @@ import "./App.css";
 import SearchBar from "../SearchBar/SearchBar";
 import SearchResults from "../SearchResults/SearchResults";
 import PlayList from "../PlayList/PlayList";
+import Spotify from "../../util/Spotify";
 
 const DemoSearchResults = [
   { id: 123, name: "Track 1", artist: "artist 1", album: "album 1" },
@@ -83,6 +84,7 @@ class App extends React.Component {
   }
 
   search(term) {
+    console.log(Spotify.getAccessToken());
     console.log("Searching for.. " + term);
 
     /**
