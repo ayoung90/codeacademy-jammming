@@ -1,8 +1,18 @@
 let accessToken = "";
 const clientId = "05d33c02876540eaa12321f85d2b8e2a";
 const redirectUri = "http://localhost:3000/";
+const authURL = "https://accounts.spotify.com/authorize?";
+const searchURL = "https://api.spotify.com/v1/search?";
 
 const Spotify = {
+  /**
+   * - Follows one of three paths
+   *  - Returns the stored token
+   *  - Stores the token provided in the redirect URL with the url supplied expiry
+   *  - Redirects the user to Spotify to autenticate in order to fetch a token
+   *
+   * @returns {String} Access Token
+   */
   getAccessToken() {
     console.log("type of token = " + typeof accessToken);
     console.log("value of token = " + accessToken);
@@ -28,13 +38,45 @@ const Spotify = {
       // Get token
       console.log("Getting Token..");
       window.location.replace(
-        `https://accounts.spotify.com/authorize?client_id=${clientId}` +
+        `${authURL}` +
+          `client_id=${clientId}` +
           `&redirect_uri=${redirectUri}` +
           `&response_type=token`
         /** @todo Implement state  */
         //&state=123`
       );
     }
+  },
+  /**
+   * @todo Implement better error handling
+   * @param {String} term
+   */
+  search(term) {
+    const headers = {
+      headers: {
+        Authorization: `Bearer ${Spotify.getAccessToken()}`
+      }
+    };
+
+    return fetch(
+      searchURL + "type=track&q=" + encodeURIComponent(term),
+      headers
+    )
+      .then(response => response.json()) //@todo add error handler..
+      .then(jsonResponse => {
+        return jsonResponse.tracks.items.map(track => {
+          console.log(track);
+          /**
+           * @todo Validate required fields.
+           */
+          return {
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            album: track.album.name
+          };
+        });
+      });
   }
 };
 

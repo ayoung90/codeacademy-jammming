@@ -84,7 +84,12 @@ class App extends React.Component {
   }
 
   search(term) {
-    console.log(Spotify.getAccessToken());
+    //console.log(Spotify.getAccessToken());
+    console.log("Searching for.. " + term);
+    Spotify.search(term).then(tracks => {
+      console.log("tracks " + tracks);
+      this.setState({ searchResults: tracks });
+    });
     console.log("Searching for.. " + term);
 
     /**
