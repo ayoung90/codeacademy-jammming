@@ -1,9 +1,15 @@
+// AUTHENTICATION
 let accessToken = "";
 const clientId = "05d33c02876540eaa12321f85d2b8e2a";
 const redirectUri = "http://localhost:3000/";
 const authURL = "https://accounts.spotify.com/authorize?";
-const searchURL = "https://api.spotify.com/v1/search?";
-const userURL = "https://api.spotify.com/v1/me";
+/** A space seperated list of scope to request */
+const scope = "playlist-modify-private";
+
+// SPOTIFY ENDPOINTS
+const baseURL = "https://api.spotify.com";
+const searchURL = baseURL + "/v1/search?";
+const userURL = baseURL + "/v1/me";
 
 const Spotify = {
   /**
@@ -43,7 +49,8 @@ const Spotify = {
         `${authURL}` +
           `client_id=${clientId}` +
           `&redirect_uri=${redirectUri}` +
-          `&response_type=token`
+          `&response_type=token` +
+          `&scope=${scope}`
         /** @todo Implement state  */
         //&state=123`
       );
@@ -59,6 +66,25 @@ const Spotify = {
         Authorization: `Bearer ${Spotify.getAccessToken()}`
       }
     };
+  },
+  /**
+   * Default headers for Spotify requests
+   * @param {String} method POST, PUT, etc
+   * @param {Object} body Object containing body data
+   * @returns {Object} Object containing all header values
+   */
+  postHeaders(method, body) {
+    const headerJSON = Spotify.headers();
+
+    if (typeof method === "string") {
+      headerJSON["method"] = method;
+    }
+
+    if (typeof body === "string") {
+      headerJSON["body"] = body;
+    }
+
+    return headerJSON;
   },
   /**
    * @todo Implement better error handling
@@ -105,28 +131,64 @@ const Spotify = {
     if (playlistName === undefined && trackURIs === undefined) {
       return;
     }
-    const headers = Spotify.headers();
+    let headers = Spotify.headers();
     let userID;
+    let playlistID;
 
-    try {
-      fetch(userURL, headers)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`Network response was ${response.status}.`);
-          }
-          return response.json();
-        }) //@todo add error handler..
-        .then(jsonResponse => {
+    fetch(userURL, headers)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Network response was ${response.status}.`);
+        }
+        return response.json();
+      }) //@todo add error handler..
+      .then(
+        jsonResponse => {
           console.log(jsonResponse);
           userID = jsonResponse.id;
-        });
-    } catch (error) {
-      console.log(
-        "There has been a problem with retrieving the userID: ",
-        error.message
-      );
-      return; /** @todo send error response to calling function */
-    }
+          console.log(userID);
+        },
+        error => {
+          console.log(
+            "There has been a problem with retrieving the userID: ",
+            error.message
+          );
+          return;
+          /** @todo send error response to calling function */
+        }
+      )
+      .then(() => {
+        // Create new Playlist
+        let url = baseURL + `/v1/users/${userID}/playlists`;
+        const body = `{"name":"${playlistName}", "description":"${"created in jammming"}","public":false}`;
+
+        headers = Spotify.postHeaders("POST", body);
+        console.log("url = " + url);
+        console.log(headers);
+
+        fetch(url, headers)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Network response was ${response.status}.`);
+            }
+            return response.json();
+          }) //@todo add error handler..
+          .then(
+            jsonResponse => {
+              console.log(jsonResponse);
+              playlistID = jsonResponse.id;
+              console.log("playlistID = " + playlistID);
+            },
+            error => {
+              console.log(
+                "There has been a problem with retrieving the playlistID: ",
+                error.message
+              );
+              return;
+              /** @todo send error response to calling function */
+            }
+          );
+      });
   }
 };
 
