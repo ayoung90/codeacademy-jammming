@@ -3,6 +3,7 @@ const clientId = "05d33c02876540eaa12321f85d2b8e2a";
 const redirectUri = "http://localhost:3000/";
 const authURL = "https://accounts.spotify.com/authorize?";
 const searchURL = "https://api.spotify.com/v1/search?";
+const userURL = "https://api.spotify.com/v1/me";
 
 const Spotify = {
   /**
@@ -49,15 +50,22 @@ const Spotify = {
     }
   },
   /**
-   * @todo Implement better error handling
-   * @param {String} term
+   * Default headers for Spotify requests
+   * @returns {Object} Object containing all header values
    */
-  search(term) {
-    const headers = {
+  headers() {
+    return {
       headers: {
         Authorization: `Bearer ${Spotify.getAccessToken()}`
       }
     };
+  },
+  /**
+   * @todo Implement better error handling
+   * @param {String} term
+   */
+  search(term) {
+    const headers = Spotify.headers();
 
     return fetch(
       searchURL + "type=track&q=" + encodeURIComponent(term),
@@ -85,6 +93,40 @@ const Spotify = {
           };
         });
       });
+  },
+  /**
+   * - GET current user’s ID
+   * - POST a new playlist with the input name to the current user’s Spotify account. Receive the playlist ID back from the request.
+   * - POST the track URIs to the newly-created playlist, referencing the current user’s account (ID) and the new playlist (ID)
+   * @param {String} playlistName
+   * @param {Array<String>} trackURIs
+   */
+  savePlaylist(playlistName, trackURIs) {
+    if (playlistName === undefined && trackURIs === undefined) {
+      return;
+    }
+    const headers = Spotify.headers();
+    let userID;
+
+    try {
+      fetch(userURL, headers)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Network response was ${response.status}.`);
+          }
+          return response.json();
+        }) //@todo add error handler..
+        .then(jsonResponse => {
+          console.log(jsonResponse);
+          userID = jsonResponse.id;
+        });
+    } catch (error) {
+      console.log(
+        "There has been a problem with retrieving the userID: ",
+        error.message
+      );
+      return; /** @todo send error response to calling function */
+    }
   }
 };
 

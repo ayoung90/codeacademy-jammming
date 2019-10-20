@@ -81,6 +81,7 @@ class App extends React.Component {
     /**
      * @todo integrate with Spotify API
      */
+    Spotify.savePlaylist(this.state.playListName, trackURIs);
   }
 
   search(term) {
