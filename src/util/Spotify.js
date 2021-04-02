@@ -161,7 +161,7 @@ const Spotify = {
       .then(() => {
         // Create new Playlist
         let url = baseURL + `/v1/users/${userID}/playlists`;
-        const body = `{"name":"${playlistName}", "description":"${"created in jammming"}","public":false}`;
+        let body = `{"name":"${playlistName}", "description":"${"created in jammming"}","public":false}`;
 
         headers = Spotify.postHeaders("POST", body);
         console.log("url = " + url);
@@ -192,23 +192,17 @@ const Spotify = {
           .then(() => {
             // add tracks to playlist
             let url = baseURL + `/v1/playlists/${playlistID}/tracks`;
+            let formatTracks;
             if (trackURIs.length !== 0) {
-              let formatTracks = trackURIs.map(
-                track => "spotify:track:" + track
-              );
+              formatTracks = trackURIs.map(track => "spotify:track:" + track);
               //"spotify:track:" + trackURIs.join(",spotify:track:");
-              const body = `{"uris": ${formatTracks}}`;
-              console.log("TRACK url = " + url);
-              console.log("TRACK formatTracks = " + formatTracks);
-              console.log("TRACK body = " + body);
+              body = `{"uris": ${JSON.stringify(formatTracks)}}`;
             } else {
               //No point adding an empty list
               return;
             }
 
             headers = Spotify.postHeaders("POST", body);
-            //console.log("url = " + url);
-            //console.log(headers);
 
             fetch(url, headers)
               .then(response => {
@@ -220,8 +214,10 @@ const Spotify = {
               .then(
                 jsonResponse => {
                   console.log(jsonResponse);
-                  // playlistID = jsonResponse.id;
-                   console.log("tracks added!");
+                  /**
+                   * @todo Convert to proper success message
+                   */
+                  console.log("tracks added!");
                 },
                 error => {
                   console.log(

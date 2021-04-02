@@ -78,6 +78,10 @@ class App extends React.Component {
     this.setState({ playListTracks: [] });
   }
 
+  /**
+   * Save a new playlist & songlist under the entered title
+   * @todo add the ability to modify or create new
+   */
   savePlaylist() {
     const trackURIs = this.state.playListTracks.map(track => track.id);
     console.log(
@@ -89,18 +93,14 @@ class App extends React.Component {
     Spotify.savePlaylist(this.state.playListName, trackURIs);
   }
 
+  /**
+   * Execute a search on spotify and fill the search results
+   * @param {*} term Search keyword (name / track / album etc)
+   */
   search(term) {
-    //console.log(Spotify.getAccessToken());
-    console.log("Searching for.. " + term);
     Spotify.search(term).then(tracks => {
-      console.log("tracks " + tracks);
       this.setState({ searchResults: tracks });
     });
-    console.log("Searching for.. " + term);
-
-    /**
-     * @todo integrate with Spotify API
-     */
   }
 
   render() {
