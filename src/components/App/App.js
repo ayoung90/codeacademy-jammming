@@ -69,8 +69,13 @@ class App extends React.Component {
     this.setState({ playListTracks: newTracks });
   }
 
+  /**
+   * Update the playlist name and also clear tracks (new playlist)
+   * @param {*} name new playlist name
+   */
   updatePlaylistName(name) {
     this.setState({ playListName: name });
+    this.setState({ playListTracks: [] });
   }
 
   savePlaylist() {

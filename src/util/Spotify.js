@@ -126,6 +126,7 @@ const Spotify = {
    * - POST the track URIs to the newly-created playlist, referencing the current user’s account (ID) and the new playlist (ID)
    * @param {String} playlistName
    * @param {Array<String>} trackURIs
+   * @todo break this up into sub functions? (authenticate --> playlist create --> add tracks)
    */
   savePlaylist(playlistName, trackURIs) {
     if (playlistName === undefined && trackURIs === undefined) {
@@ -187,7 +188,51 @@ const Spotify = {
               return;
               /** @todo send error response to calling function */
             }
-          );
+          )
+          .then(() => {
+            // add tracks to playlist
+            let url = baseURL + `/v1/playlists/${playlistID}/tracks`;
+            if (trackURIs.length !== 0) {
+              let formatTracks = trackURIs.map(
+                track => "spotify:track:" + track
+              );
+              //"spotify:track:" + trackURIs.join(",spotify:track:");
+              const body = `{"uris": ${formatTracks}}`;
+              console.log("TRACK url = " + url);
+              console.log("TRACK formatTracks = " + formatTracks);
+              console.log("TRACK body = " + body);
+            } else {
+              //No point adding an empty list
+              return;
+            }
+
+            headers = Spotify.postHeaders("POST", body);
+            //console.log("url = " + url);
+            //console.log(headers);
+
+            fetch(url, headers)
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error(`Network response was ${response.status}.`);
+                }
+                return response.json();
+              }) //@todo add error handler..
+              .then(
+                jsonResponse => {
+                  console.log(jsonResponse);
+                  // playlistID = jsonResponse.id;
+                   console.log("tracks added!");
+                },
+                error => {
+                  console.log(
+                    "There has been a problem with adding tracks to the playlistID: ",
+                    error.message
+                  );
+                  return;
+                  /** @todo send error response to calling function */
+                }
+              );
+          });
       });
   }
 };
