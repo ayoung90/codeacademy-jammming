@@ -5,6 +5,8 @@ import "./App.css";
 import SearchBar from "../SearchBar/SearchBar";
 import SearchResults from "../SearchResults/SearchResults";
 import PlayList from "../PlayList/PlayList";
+import UserPanel from "../UserPanel/UserPanel";
+//Integrations
 import Spotify from "../../util/Spotify";
 
 const DemoSearchResults = [
@@ -40,6 +42,7 @@ class App extends React.Component {
     this.state = {
       searchResults: DemoSearchResults,
       playListName: "Adam Young 101",
+      user: { name: "Demo User" },
       playListTracks: DemoPlayListTracks
     };
     this.addTrack = this.addTrack.bind(this);
@@ -110,6 +113,7 @@ class App extends React.Component {
           Ja<span className="highlight">mmm</span>ing
         </h1>
         <div className="App">
+          <UserPanel user={this.state.user} />
           <SearchBar onSearch={this.search} />
           <div className="App-playlist">
             <SearchResults
