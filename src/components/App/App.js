@@ -53,10 +53,10 @@ class App extends React.Component {
     this.login = this.login.bind(this);
     this.savePlaylist = this.savePlaylist.bind(this);
 
-    console.log("URL = " + window.location.href);
-    if (window.location.href.match("/auth/") !== null) {
-      this.login();
-    }
+    // console.log("URL = " + window.location.href);
+    // if (window.location.href.match("/auth/") !== null) {
+    //   this.login();
+    // }
   }
 
   addTrack(track) {
@@ -120,9 +120,15 @@ class App extends React.Component {
     let accessToken = Spotify.getAccessToken();
     //this.setState({ searchResults: tracks });
     if (typeof accessToken === "string" && accessToken !== "") {
-      this.state.user.authenticated = true;
-      const authUser = this.state.user;
-      this.setState({ user: authUser });
+      //this.state.user.authenticated = true;
+      //const authUser = this.state.user;
+      //this.setState({ user[authenticated] : true });
+
+      this.setState(prevState => {
+        let user = Object.assign({}, prevState.user);
+        user.authenticated = true;
+        return { user };
+      });
     } else {
       console.log("auth failed :(");
     }

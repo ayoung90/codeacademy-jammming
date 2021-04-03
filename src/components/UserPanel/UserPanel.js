@@ -6,10 +6,6 @@ import "./UserPanel.css";
  * A panel to display the logged in users details (from spotify)
  */
 class UserPanel extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
       <div className="UserPanel">
@@ -21,8 +17,8 @@ class UserPanel extends React.Component {
   }
 }
 
-// UserPanel.propTypes = {
-//   user: PropTypes.object.isRequired
-// };
+UserPanel.propTypes = {
+  user: PropTypes.object.isRequired
+};
 
 export default UserPanel;

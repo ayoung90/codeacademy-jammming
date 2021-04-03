@@ -9,6 +9,10 @@ class Login extends React.Component {
   constructor(props) {
     super(props);
     this.login = this.login.bind(this);
+    console.log("URL = " + window.location.href);
+    if (window.location.href.match("/auth/") !== null) {
+      this.login();
+    }
   }
 
   login() {
@@ -27,8 +31,8 @@ class Login extends React.Component {
   }
 }
 
-// Login.propTypes = {
-//   user: PropTypes.object.isRequired
-// };
+Login.propTypes = {
+  onLogin: PropTypes.func
+};
 
 export default Login;
