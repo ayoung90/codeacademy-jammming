@@ -6,6 +6,7 @@ import SearchBar from "../SearchBar/SearchBar";
 import SearchResults from "../SearchResults/SearchResults";
 import PlayList from "../PlayList/PlayList";
 import UserPanel from "../UserPanel/UserPanel";
+import Login from "../Login/Login";
 //Integrations
 import Spotify from "../../util/Spotify";
 
@@ -42,13 +43,14 @@ class App extends React.Component {
     this.state = {
       searchResults: DemoSearchResults,
       playListName: "Adam Young 101",
-      user: { name: "Demo User" },
+      user: { name: "Demo User", authenticated: false },
       playListTracks: DemoPlayListTracks
     };
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
     this.updatePlaylistName = this.updatePlaylistName.bind(this);
     this.search = this.search.bind(this);
+    this.login = this.login.bind(this);
     this.savePlaylist = this.savePlaylist.bind(this);
   }
 
@@ -106,6 +108,13 @@ class App extends React.Component {
     });
   }
 
+  login() {
+    this.state.user.authenticated = true;
+    const authUser = this.state.user;
+
+    this.setState({ user: authUser });
+  }
+
   render() {
     return (
       <div>
@@ -113,21 +122,27 @@ class App extends React.Component {
           Ja<span className="highlight">mmm</span>ing
         </h1>
         <div className="App">
-          <UserPanel user={this.state.user} />
-          <SearchBar onSearch={this.search} />
-          <div className="App-playlist">
-            <SearchResults
-              onAdd={this.addTrack}
-              results={this.state.searchResults}
-            />
-            <PlayList
-              name={this.state.playListName}
-              tracks={this.state.playListTracks}
-              onRemove={this.removeTrack}
-              onNameChange={this.updatePlaylistName}
-              onSave={this.savePlaylist}
-            />
-          </div>
+          {this.state.user.authenticated ? (
+            <React.Fragment>
+              <UserPanel user={this.state.user} />
+              <SearchBar onSearch={this.search} />
+              <div className="App-playlist">
+                <SearchResults
+                  onAdd={this.addTrack}
+                  results={this.state.searchResults}
+                />
+                <PlayList
+                  name={this.state.playListName}
+                  tracks={this.state.playListTracks}
+                  onRemove={this.removeTrack}
+                  onNameChange={this.updatePlaylistName}
+                  onSave={this.savePlaylist}
+                />
+              </div>
+            </React.Fragment>
+          ) : (
+            <Login onLogin={this.login}/>
+          )}
         </div>
       </div>
     );

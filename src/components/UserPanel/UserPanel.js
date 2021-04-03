@@ -21,9 +21,8 @@ class UserPanel extends React.Component {
   }
 }
 
-UserPanel.propTypes = {
-  user: PropTypes.object.isRequired,
-  name: PropTypes.string.isRequired
-};
+// UserPanel.propTypes = {
+//   user: PropTypes.object.isRequired
+// };
 
 export default UserPanel;
