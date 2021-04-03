@@ -1,7 +1,7 @@
 // AUTHENTICATION
 let accessToken = "";
 const clientId = "05d33c02876540eaa12321f85d2b8e2a";
-const redirectUri = "http://localhost:3000/";
+const redirectUri = "http://localhost:3000/auth/";
 const authURL = "https://accounts.spotify.com/authorize?";
 /** A space seperated list of scope to request */
 const scope = "playlist-modify-private";

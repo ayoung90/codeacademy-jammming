@@ -52,6 +52,11 @@ class App extends React.Component {
     this.search = this.search.bind(this);
     this.login = this.login.bind(this);
     this.savePlaylist = this.savePlaylist.bind(this);
+
+    console.log("URL = " + window.location.href);
+    if (window.location.href.match("/auth/") !== null) {
+      this.login();
+    }
   }
 
   addTrack(track) {
@@ -59,6 +64,9 @@ class App extends React.Component {
       this.state.playListTracks.find(storedTrack => storedTrack.id === track.id)
     ) {
       // Track already exists, no need to add
+      /**
+       * @todo add a nice message
+       */
       return;
     }
     const newTracks = this.state.playListTracks.concat(track);
@@ -109,10 +117,15 @@ class App extends React.Component {
   }
 
   login() {
-    this.state.user.authenticated = true;
-    const authUser = this.state.user;
-
-    this.setState({ user: authUser });
+    let accessToken = Spotify.getAccessToken();
+    //this.setState({ searchResults: tracks });
+    if (typeof accessToken === "string" && accessToken !== "") {
+      this.state.user.authenticated = true;
+      const authUser = this.state.user;
+      this.setState({ user: authUser });
+    } else {
+      console.log("auth failed :(");
+    }
   }
 
   render() {
@@ -141,7 +154,7 @@ class App extends React.Component {
               </div>
             </React.Fragment>
           ) : (
-            <Login onLogin={this.login}/>
+            <Login onLogin={this.login} />
           )}
         </div>
       </div>
