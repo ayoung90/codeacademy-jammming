@@ -10,6 +10,8 @@ class Login extends React.Component {
     super(props);
     this.login = this.login.bind(this);
     console.log("URL = " + window.location.href);
+
+    /**@todo this is a band aid. need to move to App.js to init state after redirect */
     if (window.location.href.match("/auth/") !== null) {
       this.login();
     }

@@ -52,11 +52,6 @@ class App extends React.Component {
     this.search = this.search.bind(this);
     this.login = this.login.bind(this);
     this.savePlaylist = this.savePlaylist.bind(this);
-
-    // console.log("URL = " + window.location.href);
-    // if (window.location.href.match("/auth/") !== null) {
-    //   this.login();
-    // }
   }
 
   addTrack(track) {
@@ -116,14 +111,13 @@ class App extends React.Component {
     });
   }
 
+  /**
+   * prompt a login to spotify. if the user is already logged in, change to 'authenticated'
+   */
   login() {
     let accessToken = Spotify.getAccessToken();
-    //this.setState({ searchResults: tracks });
-    if (typeof accessToken === "string" && accessToken !== "") {
-      //this.state.user.authenticated = true;
-      //const authUser = this.state.user;
-      //this.setState({ user[authenticated] : true });
 
+    if (typeof accessToken === "string" && accessToken !== "") {
       this.setState(prevState => {
         let user = Object.assign({}, prevState.user);
         user.authenticated = true;
