@@ -43,7 +43,11 @@ class App extends React.Component {
     this.state = {
       searchResults: DemoSearchResults,
       playListName: "Adam Young 101",
-      user: { name: "Demo User", authenticated: false },
+      user: {
+        name: "Demo User",
+        email: "demo@test.com.au",
+        authenticated: false
+      },
       playListTracks: DemoPlayListTracks
     };
     this.addTrack = this.addTrack.bind(this);
@@ -98,7 +102,11 @@ class App extends React.Component {
     /**
      * @todo integrate with Spotify API
      */
-    Spotify.savePlaylist(this.state.playListName, trackURIs);
+    Spotify.savePlaylist(
+      this.state.playListName,
+      trackURIs,
+      this.state.user.userID
+    );
   }
 
   /**
@@ -118,11 +126,16 @@ class App extends React.Component {
     let accessToken = Spotify.getAccessToken();
 
     if (typeof accessToken === "string" && accessToken !== "") {
-      this.setState(prevState => {
-        let user = Object.assign({}, prevState.user);
-        user.authenticated = true;
-        return { user };
+      Spotify.getUserDetails().then(userDetails => {
+        this.setState({ user: userDetails });
       });
+
+      // this.setState(()) => {
+      //   //let user = Object.assign({}, prevState.user);
+      //   let user = Spotify.getUserDetails();
+      //   ///user.authenticated = true;
+      //   return { user };
+      // });
     } else {
       console.log("auth failed :(");
     }
