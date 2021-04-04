@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 import "./SearchBar.css";
 
@@ -29,5 +30,9 @@ class SearchBar extends React.Component {
     );
   }
 }
+
+SearchBar.propTypes = {
+  onSearch: PropTypes.func
+};
 
 export default SearchBar;

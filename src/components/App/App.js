@@ -5,6 +5,9 @@ import "./App.css";
 import SearchBar from "../SearchBar/SearchBar";
 import SearchResults from "../SearchResults/SearchResults";
 import PlayList from "../PlayList/PlayList";
+import UserPanel from "../UserPanel/UserPanel";
+import Login from "../Login/Login";
+//Integrations
 import Spotify from "../../util/Spotify";
 
 const DemoSearchResults = [
@@ -40,12 +43,18 @@ class App extends React.Component {
     this.state = {
       searchResults: DemoSearchResults,
       playListName: "Adam Young 101",
+      user: {
+        name: "Demo User",
+        email: "demo@test.com.au",
+        authenticated: false
+      },
       playListTracks: DemoPlayListTracks
     };
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
     this.updatePlaylistName = this.updatePlaylistName.bind(this);
     this.search = this.search.bind(this);
+    this.login = this.login.bind(this);
     this.savePlaylist = this.savePlaylist.bind(this);
   }
 
@@ -54,6 +63,9 @@ class App extends React.Component {
       this.state.playListTracks.find(storedTrack => storedTrack.id === track.id)
     ) {
       // Track already exists, no need to add
+      /**
+       * @todo add a nice message
+       */
       return;
     }
     const newTracks = this.state.playListTracks.concat(track);
@@ -90,7 +102,11 @@ class App extends React.Component {
     /**
      * @todo integrate with Spotify API
      */
-    Spotify.savePlaylist(this.state.playListName, trackURIs);
+    Spotify.savePlaylist(
+      this.state.playListName,
+      trackURIs,
+      this.state.user.userID
+    );
   }
 
   /**
@@ -103,6 +119,21 @@ class App extends React.Component {
     });
   }
 
+  /**
+   * prompt a login to spotify. if the user is already logged in, change to 'authenticated'
+   */
+  login() {
+    let accessToken = Spotify.getAccessToken();
+
+    if (typeof accessToken === "string" && accessToken !== "") {
+      Spotify.getUserDetails().then(userDetails => {
+        this.setState({ user: userDetails });
+      });
+    } else {
+      console.log("auth failed :(");
+    }
+  }
+
   render() {
     return (
       <div>
@@ -110,20 +141,27 @@ class App extends React.Component {
           Ja<span className="highlight">mmm</span>ing
         </h1>
         <div className="App">
-          <SearchBar onSearch={this.search} />
-          <div className="App-playlist">
-            <SearchResults
-              onAdd={this.addTrack}
-              results={this.state.searchResults}
-            />
-            <PlayList
-              name={this.state.playListName}
-              tracks={this.state.playListTracks}
-              onRemove={this.removeTrack}
-              onNameChange={this.updatePlaylistName}
-              onSave={this.savePlaylist}
-            />
-          </div>
+          {this.state.user.authenticated ? (
+            <React.Fragment>
+              <UserPanel user={this.state.user} />
+              <SearchBar onSearch={this.search} />
+              <div className="App-playlist">
+                <SearchResults
+                  onAdd={this.addTrack}
+                  results={this.state.searchResults}
+                />
+                <PlayList
+                  name={this.state.playListName}
+                  tracks={this.state.playListTracks}
+                  onRemove={this.removeTrack}
+                  onNameChange={this.updatePlaylistName}
+                  onSave={this.savePlaylist}
+                />
+              </div>
+            </React.Fragment>
+          ) : (
+            <Login onLogin={this.login} />
+          )}
         </div>
       </div>
     );

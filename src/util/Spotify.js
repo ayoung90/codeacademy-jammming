@@ -1,10 +1,10 @@
 // AUTHENTICATION
 let accessToken = "";
 const clientId = "05d33c02876540eaa12321f85d2b8e2a";
-const redirectUri = "http://localhost:3000/";
+const redirectUri = "http://localhost:3000/auth/";
 const authURL = "https://accounts.spotify.com/authorize?";
 /** A space seperated list of scope to request */
-const scope = "playlist-modify-private";
+const scope = "playlist-modify-private user-read-email";
 
 // SPOTIFY ENDPOINTS
 const baseURL = "https://api.spotify.com";
@@ -106,7 +106,6 @@ const Spotify = {
           return {};
         }
         return jsonResponse.tracks.items.map(track => {
-          console.log(track);
           /**
            * @todo Validate required fields.
            */
@@ -120,23 +119,15 @@ const Spotify = {
         });
       });
   },
-  /**
-   * - GET current user’s ID
-   * - POST a new playlist with the input name to the current user’s Spotify account. Receive the playlist ID back from the request.
-   * - POST the track URIs to the newly-created playlist, referencing the current user’s account (ID) and the new playlist (ID)
-   * @param {String} playlistName
-   * @param {Array<String>} trackURIs
-   * @todo break this up into sub functions? (authenticate --> playlist create --> add tracks)
-   */
-  savePlaylist(playlistName, trackURIs) {
-    if (playlistName === undefined && trackURIs === undefined) {
-      return;
-    }
-    let headers = Spotify.headers();
-    let userID;
-    let playlistID;
 
-    fetch(userURL, headers)
+  /**
+   * Call spotify user API to fetch userID and user details (name, email etc)
+   * @returns Object of user details
+   */
+  getUserDetails() {
+    let headers = Spotify.headers();
+
+    return fetch(userURL, headers)
       .then(response => {
         if (!response.ok) {
           throw new Error(`Network response was ${response.status}.`);
@@ -145,9 +136,13 @@ const Spotify = {
       }) //@todo add error handler..
       .then(
         jsonResponse => {
-          console.log(jsonResponse);
-          userID = jsonResponse.id;
-          console.log(userID);
+          return {
+            userID: jsonResponse.id,
+            name: jsonResponse.display_name,
+            email: jsonResponse.email,
+            icon: jsonResponse.images[0].url,
+            authenticated: true
+          };
         },
         error => {
           console.log(
@@ -157,15 +152,72 @@ const Spotify = {
           return;
           /** @todo send error response to calling function */
         }
+      );
+  },
+
+  /**
+   * - GET current user’s ID
+   * - POST a new playlist with the input name to the current user’s Spotify account. Receive the playlist ID back from the request.
+   * - POST the track URIs to the newly-created playlist, referencing the current user’s account (ID) and the new playlist (ID)
+   * @param {String} playlistName
+   * @param {Array<String>} trackURIs
+   * @todo break this up into sub functions? (playlist create --> add tracks)
+   */
+  savePlaylist(playlistName, trackURIs, userID) {
+    if (
+      playlistName === undefined ||
+      trackURIs === undefined ||
+      userID === undefined
+    ) {
+      return;
+    }
+    let headers = Spotify.headers();
+    let playlistID;
+
+    // Create new Playlist
+    let url = baseURL + `/v1/users/${userID}/playlists`;
+    let body = `{"name":"${playlistName}", "description":"${"created in jammming"}","public":false}`;
+
+    headers = Spotify.postHeaders("POST", body);
+    console.log("url = " + url);
+    console.log(headers);
+
+    fetch(url, headers)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Network response was ${response.status}.`);
+        }
+        return response.json();
+      }) //@todo add error handler..
+      .then(
+        jsonResponse => {
+          console.log(jsonResponse);
+          playlistID = jsonResponse.id;
+          console.log("playlistID = " + playlistID);
+        },
+        error => {
+          console.log(
+            "There has been a problem with retrieving the playlistID: ",
+            error.message
+          );
+          return;
+          /** @todo send error response to calling function */
+        }
       )
       .then(() => {
-        // Create new Playlist
-        let url = baseURL + `/v1/users/${userID}/playlists`;
-        let body = `{"name":"${playlistName}", "description":"${"created in jammming"}","public":false}`;
+        // add tracks to playlist
+        let url = baseURL + `/v1/playlists/${playlistID}/tracks`;
+        let formatTracks;
+        if (trackURIs.length !== 0) {
+          formatTracks = trackURIs.map(track => "spotify:track:" + track);
+          //"spotify:track:" + trackURIs.join(",spotify:track:");
+          body = `{"uris": ${JSON.stringify(formatTracks)}}`;
+        } else {
+          //No point adding an empty list
+          return;
+        }
 
         headers = Spotify.postHeaders("POST", body);
-        console.log("url = " + url);
-        console.log(headers);
 
         fetch(url, headers)
           .then(response => {
@@ -177,58 +229,20 @@ const Spotify = {
           .then(
             jsonResponse => {
               console.log(jsonResponse);
-              playlistID = jsonResponse.id;
-              console.log("playlistID = " + playlistID);
+              /**
+               * @todo Convert to proper success message
+               */
+              console.log("tracks added!");
             },
             error => {
               console.log(
-                "There has been a problem with retrieving the playlistID: ",
+                "There has been a problem with adding tracks to the playlistID: ",
                 error.message
               );
               return;
               /** @todo send error response to calling function */
             }
-          )
-          .then(() => {
-            // add tracks to playlist
-            let url = baseURL + `/v1/playlists/${playlistID}/tracks`;
-            let formatTracks;
-            if (trackURIs.length !== 0) {
-              formatTracks = trackURIs.map(track => "spotify:track:" + track);
-              //"spotify:track:" + trackURIs.join(",spotify:track:");
-              body = `{"uris": ${JSON.stringify(formatTracks)}}`;
-            } else {
-              //No point adding an empty list
-              return;
-            }
-
-            headers = Spotify.postHeaders("POST", body);
-
-            fetch(url, headers)
-              .then(response => {
-                if (!response.ok) {
-                  throw new Error(`Network response was ${response.status}.`);
-                }
-                return response.json();
-              }) //@todo add error handler..
-              .then(
-                jsonResponse => {
-                  console.log(jsonResponse);
-                  /**
-                   * @todo Convert to proper success message
-                   */
-                  console.log("tracks added!");
-                },
-                error => {
-                  console.log(
-                    "There has been a problem with adding tracks to the playlistID: ",
-                    error.message
-                  );
-                  return;
-                  /** @todo send error response to calling function */
-                }
-              );
-          });
+          );
       });
   }
 };

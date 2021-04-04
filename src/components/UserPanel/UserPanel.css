@@ -1,0 +1,15 @@
+.UserPanel {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    padding: 1.0rem 1.0rem;
+    background-color: rgba(167, 156, 8, 0.7);
+    box-shadow: 0 4px 2px 2px #000000;
+  }
+
+.UserIcon{
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: 0 0 2px 2px #00000021;
+}
