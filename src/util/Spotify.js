@@ -140,6 +140,7 @@ const Spotify = {
             userID: jsonResponse.id,
             name: jsonResponse.display_name,
             email: jsonResponse.email,
+            icon: jsonResponse.images[0].url,
             authenticated: true
           };
         },
