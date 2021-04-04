@@ -129,13 +129,6 @@ class App extends React.Component {
       Spotify.getUserDetails().then(userDetails => {
         this.setState({ user: userDetails });
       });
-
-      // this.setState(()) => {
-      //   //let user = Object.assign({}, prevState.user);
-      //   let user = Spotify.getUserDetails();
-      //   ///user.authenticated = true;
-      //   return { user };
-      // });
     } else {
       console.log("auth failed :(");
     }
